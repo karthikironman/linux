@@ -10,13 +10,13 @@ BUILD_DIR=build
 mkdir -p $BUILD_DIR
 
 # Define the source files
-SRC_FILES=(main.c utils.c menu.c)
+SRC_FILES="main.c utils.c menu.c"
 
 # Define the build commands
 BUILD_COMMANDS=(
-  "gcc ${SRC_FILES[@]} -o $BUILD_DIR/project1_x86_64"
-  "arm-linux-gnueabi-gcc ${SRC_FILES[@]} -o $BUILD_DIR/project1_arm32"
-  "aarch64-linux-gnu-gcc ${SRC_FILES[@]} -o $BUILD_DIR/project1_aarch64"
+  "gcc $SRC_FILES -o $BUILD_DIR/project1_x86_64"
+  "arm-linux-gnueabi-gcc $SRC_FILES -o $BUILD_DIR/project1_arm32"
+  "aarch64-linux-gnu-gcc $SRC_FILES -o $BUILD_DIR/project1_aarch64"
 )
 
 # Loop through the build commands
