@@ -1,4 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #include "menu.h"
 #include "utils.h"
 
@@ -31,11 +39,64 @@ void printArchitectureInfo() {
     #endif
 }
 
+// Function to print system information
+void printSystemInfo() {
+    struct sysinfo sys_info;
+    sysinfo (&sys_info);
+
+    // Print total RAM
+    printf("Total RAM: %lu MB\n", sys_info.totalram / (1024 * 1024));
+
+    // Print free RAM
+    printf("Free RAM: %lu MB\n", sys_info.freeram / (1024 * 1024));
+
+    // Print total swap space
+    printf("Total Swap Space: %lu MB\n", sys_info.totalswap / (1024 * 1024));
+
+    // Print free swap space
+    printf("Free Swap Space: %lu MB\n", sys_info.freeswap / (1024 * 1024));
+}
+
+// Function to print IP address
+void printIpAddress() {
+    int sock;
+    struct ifreq ifr;
+    char ip[INET_ADDRSTRLEN];
+
+    // Create a socket
+    sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock < 0) {
+        perror("socket");
+        return;
+    }
+
+    // Get IP address of the first network interface
+    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ);
+    if (ioctl(sock, SIOCGIFADDR, &ifr) < 0) {
+        perror("ioctl");
+        close(sock);
+        return;
+    }
+
+    // Convert IP address to string
+    inet_ntop(AF_INET, &((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr, ip, INET_ADDRSTRLEN);
+    printf("IP Address: %s\n", ip);
+
+    // Close the socket
+    close(sock);
+}
+
 int main() {
     int choice;
 
     printf("Architecture Information:\n");
     printArchitectureInfo();
+
+    printf("\nSystem Information:\n");
+    printSystemInfo();
+
+    printf("\nIP Address:\n");
+    printIpAddress();
 
     while (1) {
         displayMenu();
